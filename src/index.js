@@ -1,4 +1,3 @@
-import './delegates';
 import * as patch from './patch';
 
 if (!global.jasmine) {

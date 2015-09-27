@@ -1,36 +1,22 @@
 import '../src/index';
 import {
-  describe as _describe,
-  beforeEach as _beforeEach,
-  beforeAll as _beforeAll,
-  it as _it,
-  fit as _fit
-} from '../src/delegates';
-
-function runEventually (taskFn) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      setTimeout(() => {
-        taskFn();
-        resolve();
-      });
-    }, 100);
-  });
-}
-
-function runEventuallyFn (taskFn) {
-  return () => {
-    return runEventually(taskFn);
-  };
-}
+  runEventuallyWithPromise,
+  stubIt,
+  envFns
+} from './utils';
 
 function resetCounter () {
   counter = 0;
 }
 
-function stubIt () {
-  _it('[stub]', () => {});
-}
+// get references to unpatched fns
+let {
+  describe: _describe,
+  beforeEach: _beforeEach,
+  beforeAll: _beforeAll,
+  it: _it,
+  fit: _fit
+} = envFns;
 
 let counter;
 
@@ -42,11 +28,13 @@ let interfaces = [
 interfaces.forEach(i => {
   let obj = i.obj;
 
+  global.currentJasmineEnv = jasmine.getEnv();
+
   _describe(`using ${i.name}:`, () => {
     _describe('beforeEach', () => {
       _beforeAll(resetCounter);
 
-      obj.beforeEach(runEventuallyFn(() => {
+      obj.beforeEach(runEventuallyWithPromise(() => {
         counter++;
       }));
 
@@ -62,7 +50,7 @@ interfaces.forEach(i => {
     _describe('afterEach', () => {
       _beforeAll(resetCounter);
 
-      obj.afterEach(runEventuallyFn(() => {
+      obj.afterEach(runEventuallyWithPromise(() => {
         counter++;
       }));
 
@@ -78,7 +66,7 @@ interfaces.forEach(i => {
     _describe('beforeAll', () => {
       _beforeAll(resetCounter);
 
-      obj.beforeAll(runEventuallyFn(() => {
+      obj.beforeAll(runEventuallyWithPromise(() => {
         counter++;
       }));
 
@@ -95,7 +83,7 @@ interfaces.forEach(i => {
       _beforeAll(resetCounter);
 
       _describe('', () => {
-        obj.afterAll(runEventuallyFn(() => {
+        obj.afterAll(runEventuallyWithPromise(() => {
           counter++;
         }));
 
@@ -114,7 +102,7 @@ interfaces.forEach(i => {
     _describe('it', () => {
       _beforeAll(resetCounter);
 
-      obj.it('[stub]', runEventuallyFn(() => {
+      obj.it('[stub]', runEventuallyWithPromise(() => {
         counter++;
       }));
 
@@ -131,17 +119,17 @@ _describe('focused fns', () => {
    * so that they don't clobber other tests.
    */
 
-  let env = new jasmine.Env();
+  let env = global.currentJasmineEnv = new jasmine.Env();
   let obj = jasmineRequire.interface(jasmine, env);
 
-  env.describe('fit', () => {
-    env.beforeAll(resetCounter);
+  _describe('fit', () => {
+    _beforeAll(resetCounter);
 
-    obj.fit('[stub]', runEventuallyFn(() => {
+    obj.fit('[stub]', runEventuallyWithPromise(() => {
       counter++;
     }));
 
-    env.fit('should correctly handle resolved promise', () => {
+    _fit('should correctly handle resolved promise', () => {
       expect(counter).toBe(1);
     });
   });
