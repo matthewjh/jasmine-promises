@@ -1,0 +1,50 @@
+function patchFunction(obj, slot, fnArgIndex) {
+  let delegate = obj[slot];
+
+  obj[slot] = function () {
+    let testFn = arguments[fnArgIndex];
+
+    arguments[fnArgIndex] = function (done) {
+      testFn().then(() => {
+        done();
+      });
+    };
+
+    delegate.apply(this, arguments);
+  };
+}
+
+function patchInterfaceObj (interfaceObj) {
+  let targets = [
+    {slot: 'afterEach', fnArgIndex: 0},
+    {slot: 'beforeEach', fnArgIndex: 0},
+    {slot: 'beforeAll', fnArgIndex: 0},
+    {slot: 'afterAll', fnArgIndex: 0},
+    {slot: 'it', fnArgIndex: 1},
+    {slot: 'fit', fnArgIndex: 1}
+  ];
+
+  targets.forEach(target => {
+    patchFunction(interfaceObj, target.slot, target.fnArgIndex);
+  });
+} 
+
+function patchInterfaceFn (obj) {
+  let delegate = obj.interface;
+  obj.interface = function () {
+    var interfaceObj = delegate.apply(this, arguments);
+
+    patchInterfaceObj(interfaceObj);
+
+    return interfaceObj;
+  }
+}
+
+function apply () {
+  patchInterfaceObj(global);
+  patchInterfaceFn(global.jasmineRequire);
+}
+
+module.exports = {
+  apply: apply
+};

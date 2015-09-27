@@ -1,2 +1,8 @@
-class A {}
-console.log('hi');
+import './delegates';
+import * as patch from './patch';
+
+if (!global.jasmine) {
+  throw new Error('jasmine must be loaded before jasmine-promise');
+}
+
+patch.apply();
