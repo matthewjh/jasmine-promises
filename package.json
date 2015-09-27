@@ -17,11 +17,14 @@
   },
   "homepage": "https://github.com/matthewjh/jasmine-promise#readme",
   "devDependencies": {
+    "babelify": "^6.3.0",
+    "browserify": "^11.2.0",
     "gulp": "^3.9.0",
     "jasmine": "^2.3.2",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.10",
     "karma-chrome-launcher": "^0.2.0",
-    "karma-jasmine": "^0.3.6"
+    "karma-jasmine": "^0.3.6",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
