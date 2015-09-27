@@ -1,0 +1,27 @@
+{
+  "name": "jasmine-promise",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "karma start karma.conf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewjh/jasmine-promise.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matthewjh/jasmine-promise/issues"
+  },
+  "homepage": "https://github.com/matthewjh/jasmine-promise#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "jasmine": "^2.3.2",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.13.10",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-jasmine": "^0.3.6"
+  }
+}
