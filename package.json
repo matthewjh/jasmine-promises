@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "karma start"
+    "test": "karma start",
+    "test.sauce": "karma start karma-sauce.conf.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "karma-browserify": "^4.3.0",
     "karma-chrome-launcher": "^0.2.0",
     "karma-jasmine": "^0.3.6",
+    "karma-sauce-launcher": "^0.2.14",
     "vinyl-source-stream": "^1.1.0"
   }
 }
