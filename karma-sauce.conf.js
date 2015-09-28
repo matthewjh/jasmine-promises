@@ -14,12 +14,6 @@ module.exports = function (config) {
       platform: 'OS X 10.10',
       version: '45.0'
     },
-    sl_chrome_beta: {
-      base: 'SauceLabs',
-      browserName: 'chrome',
-      platform: 'OS X 10.10',
-      version: 'beta'
-    },
     sl_firefox: {
       base: 'SauceLabs',
       browserName: 'firefox',
@@ -42,18 +36,6 @@ module.exports = function (config) {
       browserName: 'internet explorer',
       platform: 'Windows 2012',
       version: '10'
-    },
-    sl_ie_9: {
-      base: 'SauceLabs',
-      browserName: 'internet explorer',
-      platform: 'Windows 2008',
-      version: '9'
-    },
-    sl_edge: {
-      base: 'SauceLabs',
-      browserName: 'microsoftedge',
-      platform: 'Windows 10',
-      version: '20.10240'
     }
   };
 
