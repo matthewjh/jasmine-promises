@@ -3,6 +3,7 @@ import {
   runEventuallyWithPromiseAndDone,
   runEventuallyWithPromise,
   runEventuallyWithDone,
+  runSync,
   stubIt,
   envFns
 } from './utils';
@@ -27,7 +28,8 @@ let interfaces = [
   {name: 'custom interface', obj: jasmineRequire.interface(jasmine, jasmine.getEnv())}
 ];
 
-let runEventuallyFns = [
+let runFns = [
+  runSync,
   runEventuallyWithPromise,
   runEventuallyWithDone,
 
@@ -40,10 +42,10 @@ let runEventuallyFns = [
 interfaces.forEach(i => {
   let obj = i.obj;
 
-  runEventuallyFns.forEach(runEventually =>  {
+  runFns.forEach(run =>  {
     global.currentJasmineEnv = jasmine.getEnv();
 
-    _describe(`using ${i.name} with ${runEventually.name}:`, () => {
+    _describe(`using ${i.name} with ${run.name}:`, () => {
       _beforeEach(() => {
         global.currentJasmineEnv = jasmine.getEnv();
       });
@@ -51,7 +53,7 @@ interfaces.forEach(i => {
       _describe('beforeEach', () => {
         _beforeAll(resetCounter);
 
-        obj.beforeEach(runEventually(() => {
+        obj.beforeEach(run(() => {
           counter++;
         }));
 
@@ -67,7 +69,7 @@ interfaces.forEach(i => {
       _describe('afterEach', () => {
         _beforeAll(resetCounter);
 
-        obj.afterEach(runEventually(() => {
+        obj.afterEach(run(() => {
           counter++;
         }));
 
@@ -83,7 +85,7 @@ interfaces.forEach(i => {
       _describe('beforeAll', () => {
         _beforeAll(resetCounter);
 
-        obj.beforeAll(runEventually(() => {
+        obj.beforeAll(run(() => {
           counter++;
         }));
 
@@ -100,7 +102,7 @@ interfaces.forEach(i => {
         _beforeAll(resetCounter);
 
         _describe('', () => {
-          obj.afterAll(runEventually(() => {
+          obj.afterAll(run(() => {
             counter++;
           }));
 
@@ -119,7 +121,7 @@ interfaces.forEach(i => {
       _describe('it', () => {
         _beforeAll(resetCounter);
 
-        obj.it('[stub]', runEventually(() => {
+        obj.it('[stub]', run(() => {
           counter++;
         }));
 

@@ -36,6 +36,12 @@ export function runEventuallyWithPromiseAndDone (taskFn) {
   };
 }
 
+export function runSync (taskFn) {
+  return () => {
+    taskFn();
+  };
+}
+
 
 export function stubIt () {
   envFns.it('[stub]', () => {});

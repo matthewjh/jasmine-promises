@@ -6,12 +6,18 @@ function patchFunction(obj, slot, fnArgIndex) {
 
     arguments[fnArgIndex] = function (done) {
       let testFnHasDoneArg = testFn.length >= 1;
-      let returnValue = testFnHasDoneArg ? testFn(done) : testFn();
 
-      if (!testFnHasDoneArg && returnValue && returnValue.then) {
-        returnValue.then(() => {
+      if (testFnHasDoneArg) {
+        testFn(done);
+      } else {
+        let returnValue = testFn();
+        if (returnValue && returnValue.then) {
+          returnValue.then(() => {
+            done();
+          });
+        } else {
           done();
-        });
+        }
       }
     };
 
