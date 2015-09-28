@@ -6,11 +6,12 @@ function patchFunction(obj, slot, fnArgIndex) {
 
     arguments[fnArgIndex] = function (done) {
       let testFnHasDoneArg = testFn.length >= 1;
+      let returnValue;
 
       if (testFnHasDoneArg) {
-        testFn(done);
+        returnValue = testFn(done);
       } else {
-        let returnValue = testFn();
+        returnValue = testFn();
         if (returnValue && returnValue.then) {
           returnValue.then(() => {
             done();
@@ -19,9 +20,11 @@ function patchFunction(obj, slot, fnArgIndex) {
           done();
         }
       }
+
+      return returnValue;
     };
 
-    delegate.apply(this, arguments);
+    return delegate.apply(this, arguments);
   };
 }
 
