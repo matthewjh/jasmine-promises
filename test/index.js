@@ -1,3 +1,4 @@
+import 'es6-promise';
 import '../src/index';
 import {
   runEventuallyWithPromiseAndDone,

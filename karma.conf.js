@@ -1,6 +1,3 @@
-// Karma configuration
-// Generated on Sun Sep 27 2015 21:10:31 GMT+0100 (BST)
-
 module.exports = function(config) {
   config.set({
 
@@ -62,13 +59,8 @@ module.exports = function(config) {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['Chrome'],
 
-
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
-    singleRun: true,
-
-    onPrepare: function () {
-      require('es6-promise');
-    }
+    singleRun: true
   })
 }
