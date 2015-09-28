@@ -11,6 +11,32 @@ export function runEventuallyWithPromise (taskFn) {
   };
 }
 
+export function runEventuallyWithDone (taskFn) {
+  return (done) => {
+    setTimeout(() => {
+      setTimeout(() => {
+        taskFn();
+        done();
+      });
+    }, 100);
+  };
+}
+
+export function runEventuallyWithPromiseAndDone (taskFn) {
+  return (done) => {
+    return new Promise(resolve => {
+      resolve();
+      setTimeout(() => {
+        setTimeout(() => {
+          taskFn();
+          done();
+        });
+      }, 100);
+    });
+  };
+}
+
+
 export function stubIt () {
   envFns.it('[stub]', () => {});
 }

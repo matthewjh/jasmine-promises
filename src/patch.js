@@ -5,9 +5,14 @@ function patchFunction(obj, slot, fnArgIndex) {
     let testFn = arguments[fnArgIndex];
 
     arguments[fnArgIndex] = function (done) {
-      testFn().then(() => {
-        done();
-      });
+      let testFnHasDoneArg = testFn.length >= 1;
+      let returnValue = testFnHasDoneArg ? testFn(done) : testFn();
+
+      if (!testFnHasDoneArg && returnValue && returnValue.then) {
+        returnValue.then(() => {
+          done();
+        });
+      }
     };
 
     delegate.apply(this, arguments);

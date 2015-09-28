@@ -1,6 +1,8 @@
 import '../src/index';
 import {
+  runEventuallyWithPromiseAndDone,
   runEventuallyWithPromise,
+  runEventuallyWithDone,
   stubIt,
   envFns
 } from './utils';
@@ -25,89 +27,105 @@ let interfaces = [
   {name: 'custom interface', obj: jasmineRequire.interface(jasmine, jasmine.getEnv())}
 ];
 
+let runEventuallyFns = [
+  runEventuallyWithPromise,
+  runEventuallyWithDone,
+
+  /*
+   * In this case, the `done` call should take precedence.
+   */
+  runEventuallyWithPromiseAndDone
+];
+
 interfaces.forEach(i => {
   let obj = i.obj;
 
-  global.currentJasmineEnv = jasmine.getEnv();
+  runEventuallyFns.forEach(runEventually =>  {
+    global.currentJasmineEnv = jasmine.getEnv();
 
-  _describe(`using ${i.name}:`, () => {
-    _describe('beforeEach', () => {
-      _beforeAll(resetCounter);
-
-      obj.beforeEach(runEventuallyWithPromise(() => {
-        counter++;
-      }));
-
-      _it('should correctly handle resolved promise', () => {
-        expect(counter).toEqual(1);
+    _describe(`using ${i.name} with ${runEventually.name}:`, () => {
+      _beforeEach(() => {
+        global.currentJasmineEnv = jasmine.getEnv();
       });
 
-      _it('should correctly handle resolved promise (after 2nd spec)', () => {
-        expect(counter).toEqual(2);
-      });
-    });
+      _describe('beforeEach', () => {
+        _beforeAll(resetCounter);
 
-    _describe('afterEach', () => {
-      _beforeAll(resetCounter);
-
-      obj.afterEach(runEventuallyWithPromise(() => {
-        counter++;
-      }));
-
-      _it('should correctly handle resolved promise', () => {
-        expect(counter).toEqual(0);
-      });
-
-      _it('should correctly handle resolved promise (after 2nd spec)', () => {
-        expect(counter).toEqual(1);
-      });
-    });
-
-    _describe('beforeAll', () => {
-      _beforeAll(resetCounter);
-
-      obj.beforeAll(runEventuallyWithPromise(() => {
-        counter++;
-      }));
-
-      _it('should correctly handle resolved promise', () => {
-        expect(counter).toEqual(1);
-      });
-
-      _it('should correctly handle resolved promise (after 2nd spec)', () => {
-        expect(counter).toEqual(1);
-      });
-    });
-
-    _describe('afterAll', () => {
-      _beforeAll(resetCounter);
-
-      _describe('', () => {
-        obj.afterAll(runEventuallyWithPromise(() => {
+        obj.beforeEach(runEventually(() => {
           counter++;
         }));
 
-        stubIt();
+        _it('should correctly handle completed async task', () => {
+          expect(counter).toEqual(1);
+        });
+
+        _it('should correctly handle completed async task (after 2nd spec)', () => {
+          expect(counter).toEqual(2);
+        });
       });
 
-      _it('should correctly handle resolved promise', () => {
-        expect(counter).toBe(1);
+      _describe('afterEach', () => {
+        _beforeAll(resetCounter);
+
+        obj.afterEach(runEventually(() => {
+          counter++;
+        }));
+
+        _it('should correctly handle completed async task', () => {
+          expect(counter).toEqual(0);
+        });
+
+        _it('should correctly handle completed async task (after 2nd spec)', () => {
+          expect(counter).toEqual(1);
+        });
       });
 
-      _it('should correctly handle resolved promise (after 2nd spec)', () => {
-        expect(counter).toEqual(1);
+      _describe('beforeAll', () => {
+        _beforeAll(resetCounter);
+
+        obj.beforeAll(runEventually(() => {
+          counter++;
+        }));
+
+        _it('should correctly handle completed async task', () => {
+          expect(counter).toEqual(1);
+        });
+
+        _it('should correctly handle completed async task (after 2nd spec)', () => {
+          expect(counter).toEqual(1);
+        });
       });
-    });
 
-    _describe('it', () => {
-      _beforeAll(resetCounter);
+      _describe('afterAll', () => {
+        _beforeAll(resetCounter);
 
-      obj.it('[stub]', runEventuallyWithPromise(() => {
-        counter++;
-      }));
+        _describe('', () => {
+          obj.afterAll(runEventually(() => {
+            counter++;
+          }));
 
-      _it('should correctly handle resolved promise', () => {
-        expect(counter).toBe(1);
+          stubIt();
+        });
+
+        _it('should correctly handle completed async task', () => {
+          expect(counter).toBe(1);
+        });
+
+        _it('should correctly handle completed async task (after 2nd spec)', () => {
+          expect(counter).toEqual(1);
+        });
+      });
+
+      _describe('it', () => {
+        _beforeAll(resetCounter);
+
+        obj.it('[stub]', runEventually(() => {
+          counter++;
+        }));
+
+        _it('should correctly handle completed async task', () => {
+          expect(counter).toBe(1);
+        });
       });
     });
   });
