@@ -51,11 +51,11 @@ interfaces.forEach(i => {
           counter++;
         }));
 
-        _it('should correctly handle completed async task', () => {
+        _it('should correctly handle completed spec', () => {
           expect(counter).toEqual(1);
         });
 
-        _it('should correctly handle completed async task (after 2nd spec)', () => {
+        _it('should correctly handle completed 2nd spec', () => {
           expect(counter).toEqual(2);
         });
       });
@@ -67,11 +67,11 @@ interfaces.forEach(i => {
           counter++;
         }));
 
-        _it('should correctly handle completed async task', () => {
+        _it('should correctly handle completed spec', () => {
           expect(counter).toEqual(0);
         });
 
-        _it('should correctly handle completed async task (after 2nd spec)', () => {
+        _it('should correctly handle completed 2nd spec', () => {
           expect(counter).toEqual(1);
         });
       });
@@ -83,11 +83,11 @@ interfaces.forEach(i => {
           counter++;
         }));
 
-        _it('should correctly handle completed async task', () => {
+        _it('should correctly handle completed spec', () => {
           expect(counter).toEqual(1);
         });
 
-        _it('should correctly handle completed async task (after 2nd spec)', () => {
+        _it('should correctly handle completed 2nd spec', () => {
           expect(counter).toEqual(1);
         });
       });
@@ -103,11 +103,11 @@ interfaces.forEach(i => {
           stubIt();
         });
 
-        _it('should correctly handle completed async task', () => {
+        _it('should correctly handle completed spec', () => {
           expect(counter).toBe(1);
         });
 
-        _it('should correctly handle completed async task (after 2nd spec)', () => {
+        _it('should correctly handle completed 2nd spec', () => {
           expect(counter).toEqual(1);
         });
       });
@@ -119,7 +119,7 @@ interfaces.forEach(i => {
           counter++;
         }));
 
-        _it('should correctly handle completed async task', () => {
+        _it('should correctly handle completed spec', () => {
           expect(counter).toBe(1);
         });
       });
@@ -134,7 +134,7 @@ _describe('focused fns', () => {
    * so that they don't clobber other tests.
    */
 
-  _it('should correctly handle completed async task', (done) => {
+  _it('should correctly handle completed specs', (done) => {
     let log = [];
     let env = new jasmine.Env();
 
