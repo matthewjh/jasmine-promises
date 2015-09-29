@@ -16,6 +16,13 @@ function patchFunction(obj, slot, fnArgIndex) {
           returnValue.then(() => {
             done();
           });
+
+          if (returnValue.catch && done.fail) {
+            returnValue.catch((err) => {
+              done.fail(err);
+            });
+          }
+
         } else {
           done();
         }

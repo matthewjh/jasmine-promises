@@ -6,7 +6,7 @@ import {
   runEventuallyWithDone,
   runSync,
   stubIt,
-  envFns
+  interfaces
 } from './utils';
 
 function resetCounter () {
@@ -18,16 +18,13 @@ let {
   describe: _describe,
   beforeEach: _beforeEach,
   beforeAll: _beforeAll,
+  afterEach: _afterEach,
+  afterAll: _afterAll,
   it: _it,
   fit: _fit
-} = envFns;
+} = jasmine.getEnv();
 
 let counter;
-
-let interfaces = [
-  {name: 'global/default interface', obj: global},
-  {name: 'custom interface', obj: jasmineRequire.interface(jasmine, jasmine.getEnv())}
-];
 
 let runFns = [
   runSync,
@@ -44,12 +41,8 @@ interfaces.forEach(i => {
   let obj = i.obj;
 
   runFns.forEach(run =>  {
-    global.currentJasmineEnv = jasmine.getEnv();
 
     _describe(`using ${i.name} with ${run.name}:`, () => {
-      _beforeEach(() => {
-        global.currentJasmineEnv = jasmine.getEnv();
-      });
 
       _describe('beforeEach', () => {
         _beforeAll(resetCounter);
@@ -132,6 +125,7 @@ interfaces.forEach(i => {
       });
     });
   });
+
 });
 
 _describe('focused fns', () => {
@@ -140,19 +134,32 @@ _describe('focused fns', () => {
    * so that they don't clobber other tests.
    */
 
-  let env = global.currentJasmineEnv = new jasmine.Env();
-  let obj = jasmineRequire.interface(jasmine, env);
+  _it('should correctly handle completed async task', (done) => {
+    let log = [];
+    let env = new jasmine.Env();
 
-  _describe('fit', () => {
-    _beforeAll(resetCounter);
+    let obj = jasmineRequire.interface(jasmine, env);
 
-    obj.fit('[stub]', runEventuallyWithPromise(() => {
-      counter++;
-    }));
+    env.describe('fit', () => {
+      obj.fit('[stub]', runEventuallyWithPromise(() => {
+        log.push('a');
+      }));
 
-    _fit('should correctly handle resolved promise', () => {
-      expect(counter).toBe(1);
+      env.fit('[stub]', () => {
+        log.push('b');
+      });
     });
+
+    env.addReporter({
+      jasmineDone: () => {
+        expect(log).toEqual([
+          'a',
+          'b'
+        ]);
+        done();
+      }
+    });
+
+    env.execute();
   });
 });
-
