@@ -5,7 +5,7 @@ function patchFunction(obj, slot, fnArgIndex) {
     let testFn = arguments[fnArgIndex];
 
     arguments[fnArgIndex] = function (done) {
-      let testFnHasDoneArg = testFn.length >= 1 && typeof done === 'function';
+      let testFnHasDoneArg = testFn.length >= 1;
       let returnValue;
 
       if (testFnHasDoneArg) {
@@ -16,6 +16,13 @@ function patchFunction(obj, slot, fnArgIndex) {
           returnValue.then(() => {
             done();
           });
+
+          if (returnValue.catch && done.fail) {
+            returnValue.catch((err) => {
+              done.fail(err);
+            });
+          }
+
         } else {
           done();
         }

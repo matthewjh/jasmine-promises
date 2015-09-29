@@ -42,11 +42,11 @@ export function runSync (taskFn) {
   };
 }
 
-export function failEventuallyWithPromise () {
+export function failEventuallyWithPromise (errorMessage) {
   return () => {
     return new Promise((_, reject) => {
       setTimeout(() => {
-        let e = new Error();
+        let e = new Error(errorMessage);
 
         reject(e);
       }, 100);
@@ -54,19 +54,19 @@ export function failEventuallyWithPromise () {
   };
 }
 
-export function failEventuallyWithDone () {
+export function failEventuallyWithDone (errorMessage) {
   return (done) => {
     setTimeout(() => {
-      let e = new Error();
+      let e = new Error(errorMessage);
 
       done.fail(e);
     }, 100);
   };
 }
 
-export function failSync () {
+export function failSync (errorMessage) {
   return () => {
-    let e = new Error();
+    let e = new Error(errorMessage);
 
     throw e;
   };
@@ -75,3 +75,8 @@ export function failSync () {
 export function stubIt (env = jasmine.getEnv()) {
   env.it('[stub]', () => {});
 }
+
+export let interfaces = [
+  {name: 'global/default interface', obj: global},
+  {name: 'custom interface', obj: jasmineRequire.interface(jasmine, jasmine.getEnv())}
+];

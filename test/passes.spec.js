@@ -5,11 +5,8 @@ import {
   runEventuallyWithPromise,
   runEventuallyWithDone,
   runSync,
-  failEventuallyWithPromise,
-  failEventuallyWithDone,
-  failSync,
   stubIt,
-  envFns
+  interfaces
 } from './utils';
 
 function resetCounter () {
@@ -29,11 +26,6 @@ let {
 
 let counter;
 
-let interfaces = [
-  {name: 'global/default interface', obj: global},
-  {name: 'custom interface', obj: jasmineRequire.interface(jasmine, jasmine.getEnv())}
-];
-
 let runFns = [
   runSync,
   runEventuallyWithPromise,
@@ -45,21 +37,12 @@ let runFns = [
   runEventuallyWithPromiseAndDone
 ];
 
-let failFns = [
-  failEventuallyWithPromise,
-  failEventuallyWithDone,
-  failSync
-];
-
 interfaces.forEach(i => {
   let obj = i.obj;
 
   runFns.forEach(run =>  {
 
     _describe(`using ${i.name} with ${run.name}:`, () => {
-      _beforeEach(() => {
-        global.currentJasmineEnv = jasmine.getEnv();
-      });
 
       _describe('beforeEach', () => {
         _beforeAll(resetCounter);
@@ -143,17 +126,6 @@ interfaces.forEach(i => {
     });
   });
 
-  // failFns.forEach(fail => {
-  //   _describe(`using ${i.name} with ${fail.name}:`, () => {
-  //     _describe('it', () => {
-  //       _it('should execute it block after failing beforeEach', fail());
-
-  //       _afterEach(() => {
-  //         console.log('hier');
-  //       });
-  //     });
-  //   });
-  // });
 });
 
 _describe('focused fns', () => {
@@ -166,16 +138,6 @@ _describe('focused fns', () => {
     let log = [];
     let env = new jasmine.Env();
 
-    env.addReporter({
-      jasmineDone: () => {
-        expect(log).toEqual([
-          'a',
-          'b'
-        ]);
-        done();
-      }
-    });
-
     let obj = jasmineRequire.interface(jasmine, env);
 
     env.describe('fit', () => {
@@ -186,6 +148,16 @@ _describe('focused fns', () => {
       env.fit('[stub]', () => {
         log.push('b');
       });
+    });
+
+    env.addReporter({
+      jasmineDone: () => {
+        expect(log).toEqual([
+          'a',
+          'b'
+        ]);
+        done();
+      }
     });
 
     env.execute();
