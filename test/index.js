@@ -5,6 +5,9 @@ import {
   runEventuallyWithPromise,
   runEventuallyWithDone,
   runSync,
+  failEventuallyWithPromise,
+  failEventuallyWithDone,
+  failSync,
   stubIt,
   envFns
 } from './utils';
@@ -18,9 +21,11 @@ let {
   describe: _describe,
   beforeEach: _beforeEach,
   beforeAll: _beforeAll,
+  afterEach: _afterEach,
+  afterAll: _afterAll,
   it: _it,
   fit: _fit
-} = envFns;
+} = jasmine.getEnv();
 
 let counter;
 
@@ -40,11 +45,16 @@ let runFns = [
   runEventuallyWithPromiseAndDone
 ];
 
+let failFns = [
+  failEventuallyWithPromise,
+  failEventuallyWithDone,
+  failSync
+];
+
 interfaces.forEach(i => {
   let obj = i.obj;
 
   runFns.forEach(run =>  {
-    global.currentJasmineEnv = jasmine.getEnv();
 
     _describe(`using ${i.name} with ${run.name}:`, () => {
       _beforeEach(() => {
@@ -132,6 +142,18 @@ interfaces.forEach(i => {
       });
     });
   });
+
+  // failFns.forEach(fail => {
+  //   _describe(`using ${i.name} with ${fail.name}:`, () => {
+  //     _describe('it', () => {
+  //       _it('should execute it block after failing beforeEach', fail());
+
+  //       _afterEach(() => {
+  //         console.log('hier');
+  //       });
+  //     });
+  //   });
+  // });
 });
 
 _describe('focused fns', () => {
@@ -140,19 +162,32 @@ _describe('focused fns', () => {
    * so that they don't clobber other tests.
    */
 
-  let env = global.currentJasmineEnv = new jasmine.Env();
-  let obj = jasmineRequire.interface(jasmine, env);
+  _it('should correctly handle completed async task', (done) => {
+    let log = [];
+    let env = new jasmine.Env();
 
-  _describe('fit', () => {
-    _beforeAll(resetCounter);
-
-    obj.fit('[stub]', runEventuallyWithPromise(() => {
-      counter++;
-    }));
-
-    _fit('should correctly handle resolved promise', () => {
-      expect(counter).toBe(1);
+    env.addReporter({
+      jasmineDone: () => {
+        expect(log).toEqual([
+          'a',
+          'b'
+        ]);
+        done();
+      }
     });
+
+    let obj = jasmineRequire.interface(jasmine, env);
+
+    env.describe('fit', () => {
+      obj.fit('[stub]', runEventuallyWithPromise(() => {
+        log.push('a');
+      }));
+
+      env.fit('[stub]', () => {
+        log.push('b');
+      });
+    });
+
+    env.execute();
   });
 });
-

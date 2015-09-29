@@ -42,44 +42,36 @@ export function runSync (taskFn) {
   };
 }
 
+export function failEventuallyWithPromise () {
+  return () => {
+    return new Promise((_, reject) => {
+      setTimeout(() => {
+        let e = new Error();
 
-export function stubIt () {
-  envFns.it('[stub]', () => {});
+        reject(e);
+      }, 100);
+    });
+  };
 }
 
-/*
- * Jasmine fns that will run in env referenced by global.currentJasmineEnv
- */
-export let envFns = {
-  beforeEach() {
-    return global.currentJasmineEnv.beforeEach.apply(global.currentJasmineEnv, arguments);
-  },
+export function failEventuallyWithDone () {
+  return (done) => {
+    setTimeout(() => {
+      let e = new Error();
 
-  beforeAll() {
-    return global.currentJasmineEnv.beforeAll.apply(global.currentJasmineEnv, arguments);
-  },
+      done.fail(e);
+    }, 100);
+  };
+}
 
-  afterEach() {
-    return global.currentJasmineEnv.afterEach.apply(global.currentJasmineEnv, arguments);
-  },
+export function failSync () {
+  return () => {
+    let e = new Error();
 
-  afterAll() {
-    return global.currentJasmineEnv.afterAll.apply(global.currentJasmineEnv, arguments);
-  },
+    throw e;
+  };
+}
 
-  describe() {
-    return global.currentJasmineEnv.describe.apply(global.currentJasmineEnv, arguments);
-  },
-
-  fdescribe() {
-    return global.currentJasmineEnv.fdescribe.apply(global.currentJasmineEnv, arguments);
-  },
-
-  it() {
-    return global.currentJasmineEnv.it.apply(global.currentJasmineEnv, arguments);
-  },
-
-  fit() {
-    return global.currentJasmineEnv.fit.apply(global.currentJasmineEnv, arguments);
-  },
-};
+export function stubIt (env = jasmine.getEnv()) {
+  env.it('[stub]', () => {});
+}
