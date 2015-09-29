@@ -61,11 +61,7 @@ function patchInterfaceFn (obj) {
   }
 }
 
-function apply () {
+export function apply () {
   patchInterfaceObj(global);
   patchInterfaceFn(global.jasmineRequire);
 }
-
-module.exports = {
-  apply: apply
-};
