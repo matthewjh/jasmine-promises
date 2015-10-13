@@ -1,6 +1,6 @@
-# jasmine-promise
+# jasmine-promises
 
-[![Travis CI build status](https://api.travis-ci.org/matthewjh/jasmine-promises.png)](https://travis-ci.org/matthewjh/jasmine-promises)
+[![Travis CI build status](https://api.travis-ci.org/matthewjh/jasmine-promise.png)](https://travis-ci.org/matthewjh/jasmine-promise)
 
 Write asynchronous tests easier by returning `Promise`s from your spec functions.
 
@@ -32,7 +32,7 @@ Benefits:
 Note: only compatible with Jasmine 2 at this point.
 
 ````
-npm install jasmine-promise --save-dev`
+npm install jasmine-promises --save-dev`
 ````
 
 Then ensure that the `jasmine-promises` module's `index.js` script is loaded before your tests are loaded. This can be done by either...

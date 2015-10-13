@@ -6,7 +6,7 @@
   "main": "dist/jasmine-promises.js",
   "scripts": {
     "test": "karma start",
-    "preversion": "npm test && gulp package && git add -A dist",
+    "preversion": "npm test && git rm dist -r && gulp package && git add -A dist",
     "test.sauce": "karma start karma-sauce.conf.js"
   },
   "repository": {
