@@ -37,7 +37,7 @@ npm install jasmine-promise --save-dev`
 
 Then ensure that the `jasmine-promise` module's `index.js` script is loaded before your tests are loaded. This can be done by either...
 
-manually requiring the module at the top of your test file(s):
+manually requiring the module at the top of your test file(s) e.g. if using browserify:
 
 ````javascript
 require('jasmine-promise');
@@ -69,7 +69,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/jasmine-promise/index.js',
+      'node_modules/jasmine-promise/dist/jasmine-promise.js',
       'test/**/*.spec.js'
     ],
 ````

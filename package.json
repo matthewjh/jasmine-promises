@@ -1,5 +1,5 @@
 {
-  "name": "jasmine-promise",
+  "name": "jasmine-promises",
   "version": "0.2.0",
   "description": "",
   "main": "index.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matthewjh/jasmine-promise.git"
+    "url": "git+https://github.com/matthewjh/jasmine-promises.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/matthewjh/jasmine-promise/issues"
+    "url": "https://github.com/matthewjh/jasmine-promises/issues"
   },
-  "homepage": "https://github.com/matthewjh/jasmine-promise#readme",
+  "homepage": "https://github.com/matthewjh/jasmine-promises#readme",
   "devDependencies": {
     "babelify": "^6.3.0",
     "browserify": "^11.2.0",
