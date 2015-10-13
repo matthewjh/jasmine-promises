@@ -1,8 +1,14 @@
 {
   "name": "jasmine-promises",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Return Promises from your asynchronous Jasmine tests",
-  "keywords": ["jasmine", "promise", "async", "testing", "done"],
+  "keywords": [
+    "jasmine",
+    "promise",
+    "async",
+    "testing",
+    "done"
+  ],
   "main": "dist/jasmine-promises.js",
   "scripts": {
     "test": "karma start",
