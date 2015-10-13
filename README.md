@@ -2,7 +2,9 @@
 
 [![Travis CI build status](https://api.travis-ci.org/matthewjh/jasmine-promise.png)](https://travis-ci.org/matthewjh/jasmine-promise)
 
-Write asynchronous tests easier by returning `Promise`s from your spec functions:
+Write asynchronous tests easier by returning `Promise`s from your spec functions.
+
+No need to call `done` and `done.fail`.
 
 ````javascript
 describe('my fancy thing', function () {
