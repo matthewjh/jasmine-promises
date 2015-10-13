@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start",
+    "preversion": "npm test && gulp package && git add -A dist",
     "test.sauce": "karma start karma-sauce.conf.js"
   },
   "repository": {
