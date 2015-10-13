@@ -11,6 +11,6 @@ gulp.task('package', function () {
   return b
     .transform(babelify)
     .bundle()
-    .pipe(source('jasmine-promise.js'))
+    .pipe(source('jasmine-promises.js'))
     .pipe(gulp.dest('dist'));
 });

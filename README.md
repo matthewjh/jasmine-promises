@@ -1,6 +1,6 @@
 # jasmine-promise
 
-[![Travis CI build status](https://api.travis-ci.org/matthewjh/jasmine-promise.png)](https://travis-ci.org/matthewjh/jasmine-promise)
+[![Travis CI build status](https://api.travis-ci.org/matthewjh/jasmine-promises.png)](https://travis-ci.org/matthewjh/jasmine-promises)
 
 Write asynchronous tests easier by returning `Promise`s from your spec functions.
 
@@ -35,12 +35,12 @@ Note: only compatible with Jasmine 2 at this point.
 npm install jasmine-promise --save-dev`
 ````
 
-Then ensure that the `jasmine-promise` module's `index.js` script is loaded before your tests are loaded. This can be done by either...
+Then ensure that the `jasmine-promises` module's `index.js` script is loaded before your tests are loaded. This can be done by either...
 
 manually requiring the module at the top of your test file(s) e.g. if using browserify:
 
 ````javascript
-require('jasmine-promise');
+require('jasmine-promises');
 
 describe('my fancy thing', function () {
 	it('should be extra fancy', function () {
@@ -69,7 +69,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/jasmine-promise/dist/jasmine-promise.js',
+      'node_modules/jasmine-promises/dist/jasmine-promises.js',
       'test/**/*.spec.js'
     ],
 ````
