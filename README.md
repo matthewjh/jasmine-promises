@@ -35,7 +35,7 @@ Note: only compatible with Jasmine 2 at this point.
 npm install jasmine-promises --save-dev`
 ````
 
-Then ensure that the `jasmine-promises` module's `index.js` script is loaded before your tests are loaded. This can be done by either...
+Then ensure that `jasmine-promises` is loaded before your tests are loaded. This can be done by either...
 
 manually requiring the module at the top of your test file(s) e.g. if using browserify:
 
