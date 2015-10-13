@@ -6,6 +6,10 @@ Write asynchronous tests easier by returning `Promise`s from your spec functions
 
 ````javascript
 describe('my fancy thing', function () {
+	beforeEach(function () {
+		return doSomePreparatoryTaskThatIsAsync();
+	});
+
     it('should be extra fancy', function () {
         return fancyAsync().then(function (thing) {
             expect(thing).toBeFancy();
