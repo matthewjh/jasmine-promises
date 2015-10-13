@@ -14,7 +14,7 @@
     "url": "git+https://github.com/matthewjh/jasmine-promises.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/matthewjh/jasmine-promises/issues"
   },
