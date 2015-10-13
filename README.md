@@ -10,6 +10,16 @@ Benefits:
 * Automatic error handling when using native `Promise`'s'. When writing such tests manually, you have to explictly catch the error with `.catch` and then pass the error to `done.fail` or rethrow. Unhandled `Promise` rejections are gobbled up so if you forget to do this you can miss out on debugging info. ✓
 * Works with `it`, `fit`, `beforeEach`, `afterEach`, `beforeAll`, and `afterAll`. ✓
 
+````javascript
+describe('my fancy thing', function () {
+    it('should be extra fancy', function () {
+        return fancyAsync().then(function (thing) {
+            expect(thing).toBeFancy();
+        });
+    });
+});
+````
+
 ## Installation
 
 Note: only compatible with Jasmine 2 at this point.
