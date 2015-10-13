@@ -2,13 +2,7 @@
 
 [![Travis CI build status](https://api.travis-ci.org/matthewjh/jasmine-promise.png)](https://travis-ci.org/matthewjh/jasmine-promise)
 
-Write asynchronous tests easier by returning `Promise`s from your spec functions.
-
-Benefits:
-* Works with any `then`able. ✓
-* Simply return a promise from a test -- no need to call `done` and `done.fail` ✓
-* Automatic error handling when using native `Promise`'s'. When writing such tests manually, you have to explictly catch the error with `.catch` and then pass the error to `done.fail` or rethrow. Unhandled `Promise` rejections are gobbled up so if you forget to do this you can miss out on debugging info. ✓
-* Works with `it`, `fit`, `beforeEach`, `afterEach`, `beforeAll`, and `afterAll`. ✓
+Write asynchronous tests easier by returning `Promise`s from your spec functions:
 
 ````javascript
 describe('my fancy thing', function () {
@@ -19,6 +13,13 @@ describe('my fancy thing', function () {
     });
 });
 ````
+
+Benefits:
+* Works with any `then`able. ✓
+* Simply return a promise from a test -- no need to call `done` and `done.fail` ✓
+* Automatic error handling when using native `Promise`'s'. When writing such tests manually, you have to explictly catch the error with `.catch` and then pass the error to `done.fail` or rethrow. Unhandled `Promise` rejections are gobbled up so if you forget to do this you can miss out on debugging info. ✓
+* Works with `it`, `fit`, `beforeEach`, `afterEach`, `beforeAll`, and `afterAll`. ✓
+
 
 ## Installation
 
