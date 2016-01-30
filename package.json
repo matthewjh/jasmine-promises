@@ -1,6 +1,6 @@
 {
   "name": "jasmine-promises",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Return Promises from your asynchronous Jasmine tests",
   "keywords": [
     "jasmine",

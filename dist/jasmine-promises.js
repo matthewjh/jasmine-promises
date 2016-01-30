@@ -2,17 +2,13 @@
 (function (global){
 'use strict';
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
 var _patch = require('./patch');
-
-var patch = _interopRequireWildcard(_patch);
 
 if (!global.jasmine) {
   throw new Error('jasmine must be loaded before jasmine-promise');
 }
 
-patch.apply();
+(0, _patch.apply)();
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./patch":2}],2:[function(require,module,exports){
@@ -34,9 +30,9 @@ function patchFunction(obj, slot, fnArgIndex) {
       var returnValue = undefined;
 
       if (testFnHasDoneArg) {
-        returnValue = testFn(done);
+        returnValue = testFn.call(this, done);
       } else {
-        returnValue = testFn();
+        returnValue = testFn.call(this);
         if (returnValue && returnValue.then) {
           returnValue.then(function () {
             done();
