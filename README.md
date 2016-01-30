@@ -32,7 +32,7 @@ Benefits:
 Note: only compatible with Jasmine 2 at this point.
 
 ````
-npm install jasmine-promises --save-dev`
+npm install jasmine-promises --save-dev
 ````
 
 Then ensure that `jasmine-promises` is loaded before your tests are loaded. This can be done by either...
