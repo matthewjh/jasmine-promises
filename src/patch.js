@@ -9,9 +9,9 @@ function patchFunction(obj, slot, fnArgIndex) {
       let returnValue;
 
       if (testFnHasDoneArg) {
-        returnValue = testFn(done);
+        returnValue = testFn.call(this, done);
       } else {
-        returnValue = testFn();
+        returnValue = testFn.call(this);
         if (returnValue && returnValue.then) {
           returnValue.then(() => {
             done();

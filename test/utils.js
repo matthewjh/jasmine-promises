@@ -1,9 +1,9 @@
 export function runEventuallyWithPromise (taskFn) {
-  return () => {
+  return function () {
     return new Promise(resolve => {
       setTimeout(() => {
         setTimeout(() => {
-          taskFn();
+          taskFn.call(this);
           resolve();
         });
       }, 100);
@@ -12,10 +12,10 @@ export function runEventuallyWithPromise (taskFn) {
 }
 
 export function runEventuallyWithDone (taskFn) {
-  return (done) => {
+  return function (done) {
     setTimeout(() => {
       setTimeout(() => {
-        taskFn();
+        taskFn.call(this);
         done();
       });
     }, 100);
@@ -23,12 +23,12 @@ export function runEventuallyWithDone (taskFn) {
 }
 
 export function runEventuallyWithPromiseAndDone (taskFn) {
-  return (done) => {
+  return function (done) {
     return new Promise(resolve => {
       resolve();
       setTimeout(() => {
         setTimeout(() => {
-          taskFn();
+          taskFn.call(this);
           done();
         });
       }, 100);
@@ -37,8 +37,8 @@ export function runEventuallyWithPromiseAndDone (taskFn) {
 }
 
 export function runSync (taskFn) {
-  return () => {
-    taskFn();
+  return function () {
+    taskFn.call(this);
   };
 }
 
