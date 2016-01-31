@@ -211,3 +211,26 @@ _describe('focused fns', () => {
     env.execute();
   });
 });
+
+describe('this in fixture', () => {
+  beforeEach(function() {
+    this.field = 'value';
+  });
+
+  it('should set this correctly in the fixture', function() {
+    expect(this.field).toEqual('value');
+  });
+
+  it('should set this correctly in a test case with done', function(done) {
+    expect(this.field).toEqual('value');
+    done();
+  });
+
+  it('should set this correctly in a test case that returns a promise', function() {
+    return new Promise(resolve => {
+      resolve();
+    }).then(() => {
+      expect(this.field).toEqual('value');
+    });
+  })
+});
