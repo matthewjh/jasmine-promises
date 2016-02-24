@@ -61,7 +61,19 @@ function patchInterfaceFn (obj) {
   }
 }
 
+function patchInterfaceFns(fns) {
+  fns.forEach(fn => {
+    if (fn) {
+      patchInterfaceFn(fn);
+    }
+  });
+}
+
 export function apply () {
   patchInterfaceObj(global);
-  patchInterfaceFn(global.jasmineRequire);
+
+  patchInterfaceFns([
+    global.jasmineRequire,
+    require('jasmine-core')
+  ])
 }

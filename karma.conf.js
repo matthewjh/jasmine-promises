@@ -12,7 +12,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'test/**/*.spec.js'
+      'test/index.js'
     ],
 
 
@@ -29,7 +29,10 @@ module.exports = function(config) {
 
     browserify: {
       debug: true,
-      transform: [ 'babelify' ]
+      transform: [ 
+        'babelify', 
+        'bpb' 
+      ]
     },
 
     // test results reporter to use

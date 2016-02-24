@@ -6,7 +6,8 @@ import {
   runEventuallyWithDone,
   runSync,
   stubIt,
-  interfaces
+  interfaces,
+  getNewInterface
 } from './utils';
 
 function resetCounter () {
@@ -186,7 +187,7 @@ _describe('focused fns', () => {
     let log = [];
     let env = new jasmine.Env();
 
-    let obj = jasmineRequire.interface(jasmine, env);
+    let obj = getNewInterface(jasmine, env);
 
     env.describe('fit', () => {
       obj.fit('[stub]', runEventuallyWithPromise(() => {

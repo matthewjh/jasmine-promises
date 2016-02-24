@@ -76,7 +76,21 @@ export function stubIt (env = jasmine.getEnv()) {
   env.it('[stub]', () => {});
 }
 
-export let interfaces = [
-  {name: 'global/default interface', obj: global},
-  {name: 'custom interface', obj: jasmineRequire.interface(jasmine, jasmine.getEnv())}
+export function getNewInterface(jasmine, env) {
+  let jasmineRequire = global.jasmineRequire || require('jasmine-core');
+  return jasmineRequire.interface(jasmine, env);
+}
+
+export let allInterfaces = [
+  {
+    name: 'global/default interface', 
+    obj: global
+  },
+
+  {
+    name: 'custom interface', 
+    obj: getNewInterface()
+  }
 ];
+console.log(jasmine);
+export let interfaces = allInterfaces.filter(i => !!i.obj);

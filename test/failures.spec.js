@@ -5,7 +5,8 @@ import {
   failEventuallyWithDone,
   failSync,
   stubIt,
-  interfaces
+  interfaces,
+  getNewInterface
 } from './utils';
 
 // get references to unpatched fns
@@ -37,7 +38,7 @@ interfaces.forEach(i => {
 
       _beforeEach(() => {
         env = new jasmine.Env();
-        obj = jasmineRequire.interface(jasmine, env);
+        obj = getNewInterface(jasmine, env);
         reportedErrorMessages = [];
 
         env.addReporter({
