@@ -42,7 +42,7 @@ export function runSync (taskFn) {
   };
 }
 
-export function failEventuallyWithPromise (errorMessage) {
+export function failEventuallyWithPromiseError (errorMessage) {
   return () => {
     return new Promise((_, reject) => {
       setTimeout(() => {
@@ -54,7 +54,7 @@ export function failEventuallyWithPromise (errorMessage) {
   };
 }
 
-export function failEventuallyWithDone (errorMessage) {
+export function failEventuallyWithDoneError (errorMessage) {
   return (done) => {
     setTimeout(() => {
       let e = new Error(errorMessage);
@@ -64,11 +64,35 @@ export function failEventuallyWithDone (errorMessage) {
   };
 }
 
-export function failSync (errorMessage) {
+export function failSyncWithError (errorMessage) {
   return () => {
     let e = new Error(errorMessage);
 
     throw e;
+  };
+}
+
+export function failEventuallyWithPromiseString (errorMessage) {
+  return () => {
+    return new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(errorMessage);
+      }, 100);
+    });
+  };
+}
+
+export function failEventuallyWithDoneString (errorMessage) {
+  return (done) => {
+    setTimeout(() => {
+      done.fail(errorMessage);
+    }, 100);
+  };
+}
+
+export function failSyncWithString (errorMessage) {
+  return () => {
+    throw errorMessage;
   };
 }
 

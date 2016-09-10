@@ -1,9 +1,12 @@
 import 'es6-promise';
 import '../src/index';
 import {
-  failEventuallyWithPromise,
-  failEventuallyWithDone,
-  failSync,
+  failEventuallyWithPromiseError,
+  failEventuallyWithDoneError,
+  failSyncWithError,
+  failEventuallyWithPromiseString,
+  failEventuallyWithDoneString,
+  failSyncWithString,
   stubIt,
   interfaces
 } from './utils';
@@ -20,9 +23,12 @@ let {
 } = jasmine.getEnv();
 
 let failFns = [
-  failEventuallyWithPromise,
-  failEventuallyWithDone,
-  failSync
+  failEventuallyWithPromiseError,
+  failEventuallyWithDoneError,
+  failSyncWithError,
+  failEventuallyWithPromiseString,
+  failEventuallyWithDoneString,
+  failSyncWithString
 ];
 
 interfaces.forEach(i => {
@@ -34,20 +40,29 @@ interfaces.forEach(i => {
       let env;
       let obj;
       let reportedErrorMessages;
+      let reportedErrorStacktraces;
 
       _beforeEach(() => {
         env = new jasmine.Env();
         obj = jasmineRequire.interface(jasmine, env);
         reportedErrorMessages = [];
+        reportedErrorStacktraces = [];
 
         env.addReporter({
           specDone: (info) => {
-            let errorMessage = info.failedExpectations[0] && info.failedExpectations[0].message;
+            if (info.failedExpectations[0]) {
+              let errorMessage = info.failedExpectations[0].message;
+              let errorStack = info.failedExpectations[0].stack;
+              
+              if (errorMessage) {
+                let match = errorMessage.match(/\$.*\$/);
+                let strippedMessage = match && match[0];
+                reportedErrorMessages.push(strippedMessage);
+              }
 
-            if (errorMessage) {
-              let match = errorMessage.match(/\$.*\$/);
-              let strippedMessage = match && match[0];
-              reportedErrorMessages.push(strippedMessage);
+              if (errorStack) {
+                reportedErrorStacktraces.push(errorStack);
+              }
             }
           }
         });
@@ -61,9 +76,14 @@ interfaces.forEach(i => {
             expect(reportedErrorMessages).toEqual([
               '$FIT_FAILURE$',
             ]);
+
+            reportedErrorStacktraces.forEach(s => {
+              expect(s).not.toContain('jasmine-promises');
+            });
+            
             done();
           }
-        })
+        });
 
         env.execute();        
       });
@@ -94,7 +114,7 @@ interfaces.forEach(i => {
 
           stubIt(env);
         });
-
+        
         env.addReporter({
           jasmineDone: () => {
             expect(reportedErrorMessages).toEqual([
@@ -103,9 +123,15 @@ interfaces.forEach(i => {
               '$BEFORE_ALL_FAILURE$',
               '$AFTER_EACH_FAILURE$'
             ]);
+
+            reportedErrorStacktraces.forEach(s => {
+              expect(s.split('\n').length > 0).toBeTruthy();
+              expect(s).not.toContain('jasmine-promises');
+            });
+            
             done();
           }
-        })
+        });
 
         env.execute();
       });
