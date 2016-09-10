@@ -1,3 +1,48 @@
+function cleanError (error) {
+  function isFrameRelevant (frame) {
+    return frame.indexOf('jasmine-promises') === -1;
+  }
+
+  if (error.stack) {
+    let frames = error.stack.split('\n');
+
+    error.stack = frames.filter(isFrameRelevant).join('\n');
+  }
+
+  return error;
+}
+
+function coerceToError (reason) {
+  var error;
+  
+  if (reason instanceof Error) {
+    error = reason;
+  } else {
+    error = new Error(reason);
+
+    // generate stacktrace if it doesn't already exist
+    try {
+      throw error;
+    } catch (_) {}
+  }
+
+  return error;
+}
+
+function patchDone (done) {
+  let doneFailDelegate = done.fail;
+
+  if (doneFailDelegate) {
+    done.fail = function () {
+      if (arguments[0]) {
+        arguments[0] = cleanError(coerceToError(arguments[0]));
+      }
+      
+      return doneFailDelegate.apply(this, arguments);
+    };
+  }
+}
+
 function patchFunction(obj, slot, fnArgIndex) {
   let delegate = obj[slot];
 
@@ -8,29 +53,34 @@ function patchFunction(obj, slot, fnArgIndex) {
       let testFnHasDoneArg = testFn.length >= 1;
       let returnValue;
 
-      if (testFnHasDoneArg) {
-        returnValue = testFn.call(this, done);
-      } else {
-        returnValue = testFn.call(this);
-        if (returnValue && returnValue.then) {
-          returnValue.then(() => {
-            done();
-          });
+      patchDone(done);
 
-          if (returnValue.catch && done.fail) {
-            returnValue.catch((err) => {
-              done.fail(err);
-            });
-          }
-
+      try {
+        if (testFnHasDoneArg) {
+          returnValue = testFn.call(this, done);
         } else {
-          done();
+          returnValue = testFn.call(this);
+          if (returnValue && returnValue.then) {
+            returnValue.then(() => {
+              done();
+            });
+
+            if (returnValue.catch && done.fail) {
+              returnValue.catch(error => {
+                done.fail(error);
+              });
+            }
+
+          } else {
+            done();
+          }
         }
+      } catch (e) {
+        done.fail(e);
       }
 
       return returnValue;
     };
-
     return delegate.apply(this, arguments);
   };
 }

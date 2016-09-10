@@ -45,21 +45,21 @@ interfaces.forEach(i => {
     _describe(`using ${i.name} with ${run.name}:`, () => {
 
       _describe('beforeEach', () => {
-    		let unpatchedBeforeEachThis;
-    		let patchedBeforeEachThis;
-    		
+        let unpatchedBeforeEachThis;
+        let patchedBeforeEachThis;
+        
         _beforeAll(resetCounter);
-    		
-    		_beforeEach(function () {
-    		  unpatchedBeforeEachThis = this;
-    		});
+        
+        _beforeEach(function () {
+          unpatchedBeforeEachThis = this;
+        });
 
         obj.beforeEach(run(function () {
           counter++;
-  		  
-  		    patchedBeforeEachThis = this;
+          
+          patchedBeforeEachThis = this;
         }));
-  		
+        
         _it('should correctly handle completed spec', () => {
           expect(counter).toEqual(1);
         });
@@ -67,27 +67,27 @@ interfaces.forEach(i => {
         _it('should correctly handle completed 2nd spec', () => {
           expect(counter).toEqual(2);
         });
-  		
-    		_it('should preserve `this` binding for current spec', function (){
-    		  expect(unpatchedBeforeEachThis).toBe(patchedBeforeEachThis);
-    		  expect(patchedBeforeEachThis).toBe(this);
-    		});
+        
+        _it('should preserve `this` binding for current spec', function (){
+          expect(unpatchedBeforeEachThis).toBe(patchedBeforeEachThis);
+          expect(patchedBeforeEachThis).toBe(this);
+        });
       });
 
       _describe('afterEach', () => {
-  		  let unpatchedAfterEachThis;
-  		  let patchedAfterEachThis;
-  		 
+        let unpatchedAfterEachThis;
+        let patchedAfterEachThis;
+        
         _beforeAll(resetCounter);
 
-    		_afterEach(function () {
-    		  unpatchedAfterEachThis = this;
-    		});
-  		
+        _afterEach(function () {
+          unpatchedAfterEachThis = this;
+        });
+        
         obj.afterEach(run(function () {
           counter++;
-  		  
-  		    patchedAfterEachThis = this;
+          
+          patchedAfterEachThis = this;
         }));
 
         _it('should correctly handle completed spec', () => {
@@ -97,10 +97,10 @@ interfaces.forEach(i => {
         _it('should correctly handle completed 2nd spec', () => {
           expect(counter).toEqual(1);
         });
-  		
-    		_it('should preserve `this` binding for last spec', function (){
-    		  expect(unpatchedAfterEachThis).toBe(patchedAfterEachThis);
-    		});
+        
+        _it('should preserve `this` binding for last spec', function (){
+          expect(unpatchedAfterEachThis).toBe(patchedAfterEachThis);
+        });
       });
 
       _describe('beforeAll', () => {
@@ -140,32 +140,32 @@ interfaces.forEach(i => {
       });
 
       _describe('it', () => {
-    		let itThisForLastSpec;
-    		let beforeEachThisForThisSpec;
-    		let afterEachThisForLastSpec;
-    		let beforeEachThisForLastSpec;
-    		
+        let itThisForLastSpec;
+        let beforeEachThisForThisSpec;
+        let afterEachThisForLastSpec;
+        let beforeEachThisForLastSpec;
+        
         _beforeAll(resetCounter);
-  		
-    		_beforeEach(function () {
-    		  beforeEachThisForThisSpec = this;
-    		});
-    		
-    		_afterEach(function () {
-    		  beforeEachThisForLastSpec = beforeEachThisForThisSpec;
-    		  afterEachThisForLastSpec = this;
-    		});
+        
+        _beforeEach(function () {
+          beforeEachThisForThisSpec = this;
+        });
+        
+        _afterEach(function () {
+          beforeEachThisForLastSpec = beforeEachThisForThisSpec;
+          afterEachThisForLastSpec = this;
+        });
 
         obj.it('[stub]', run(function () {
           counter++;
-  		  
-  		    itThisForLastSpec = this;
+          
+          itThisForLastSpec = this;
         }));
-  		
-  	    _it('should preserve `this` binding from `beforeEach` and `afterEach`', () => {
-    		  expect(afterEachThisForLastSpec).toBe(beforeEachThisForLastSpec);
-    		  expect(beforeEachThisForLastSpec).toBe(itThisForLastSpec);
-    		});
+        
+        _it('should preserve `this` binding from `beforeEach` and `afterEach`', () => {
+          expect(afterEachThisForLastSpec).toBe(beforeEachThisForLastSpec);
+          expect(beforeEachThisForLastSpec).toBe(itThisForLastSpec);
+        });
 
         _it('should correctly handle completed spec', () => {
           expect(counter).toBe(1);
