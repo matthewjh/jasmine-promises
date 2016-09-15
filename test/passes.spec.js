@@ -1,213 +1,192 @@
 import 'es6-promise';
-import '../src/index';
+import {apply} from '../src/patch';
 import {
   runEventuallyWithPromiseAndDone,
   runEventuallyWithPromise,
   runEventuallyWithDone,
   runSync,
-  stubIt,
-  interfaces
+  getUnpatchedEnv
 } from './utils';
 
-function resetCounter () {
-  counter = 0;
-}
-
-// get references to unpatched fns
 let {
-  describe: _describe,
-  beforeEach: _beforeEach,
-  beforeAll: _beforeAll,
-  afterEach: _afterEach,
-  afterAll: _afterAll,
-  it: _it,
-  fit: _fit
-} = jasmine.getEnv();
+  describe,
+  fdescribe,
+  it,
+  fit,
+  beforeEach,
+  beforeAll,
+  afterEach,
+  afterAll,
+  expect
+} = getUnpatchedEnv();
 
-let counter;
+apply();
 
-let runFns = [
-  runSync,
+[
+  runEventuallyWithPromiseAndDone,
   runEventuallyWithPromise,
   runEventuallyWithDone,
+  runSync
+].forEach(run => {
+  describe(`jasmine Env with ${run.name}`, () => {
+    let env;
+    let jasmine;
 
-  /*
-   * In this case, the `done` call should take precedence.
-   */
-  runEventuallyWithPromiseAndDone
-];
-
-interfaces.forEach(i => {
-  let obj = i.obj;
-
-  runFns.forEach(run =>  {
-
-    _describe(`using ${i.name} with ${run.name}:`, () => {
-
-      _describe('beforeEach', () => {
-        let unpatchedBeforeEachThis;
-        let patchedBeforeEachThis;
-        
-        _beforeAll(resetCounter);
-        
-        _beforeEach(function () {
-          unpatchedBeforeEachThis = this;
-        });
-
-        obj.beforeEach(run(function () {
-          counter++;
-          
-          patchedBeforeEachThis = this;
-        }));
-        
-        _it('should correctly handle completed spec', () => {
-          expect(counter).toEqual(1);
-        });
-
-        _it('should correctly handle completed 2nd spec', () => {
-          expect(counter).toEqual(2);
-        });
-        
-        _it('should preserve `this` binding for current spec', function (){
-          expect(unpatchedBeforeEachThis).toBe(patchedBeforeEachThis);
-          expect(patchedBeforeEachThis).toBe(this);
-        });
-      });
-
-      _describe('afterEach', () => {
-        let unpatchedAfterEachThis;
-        let patchedAfterEachThis;
-        
-        _beforeAll(resetCounter);
-
-        _afterEach(function () {
-          unpatchedAfterEachThis = this;
-        });
-        
-        obj.afterEach(run(function () {
-          counter++;
-          
-          patchedAfterEachThis = this;
-        }));
-
-        _it('should correctly handle completed spec', () => {
-          expect(counter).toEqual(0);
-        });
-
-        _it('should correctly handle completed 2nd spec', () => {
-          expect(counter).toEqual(1);
-        });
-        
-        _it('should preserve `this` binding for last spec', function (){
-          expect(unpatchedAfterEachThis).toBe(patchedAfterEachThis);
-        });
-      });
-
-      _describe('beforeAll', () => {
-        _beforeAll(resetCounter);
-
-        obj.beforeAll(run(() => {
-          counter++;
-        }));
-
-        _it('should correctly handle completed spec', () => {
-          expect(counter).toEqual(1);
-        });
-
-        _it('should correctly handle completed 2nd spec', () => {
-          expect(counter).toEqual(1);
-        });
-      });
-
-      _describe('afterAll', () => {
-        _beforeAll(resetCounter);
-
-        _describe('', () => {
-          obj.afterAll(run(() => {
-            counter++;
-          }));
-
-          stubIt();
-        });
-
-        _it('should correctly handle completed spec', () => {
-          expect(counter).toBe(1);
-        });
-
-        _it('should correctly handle completed 2nd spec', () => {
-          expect(counter).toEqual(1);
-        });
-      });
-
-      _describe('it', () => {
-        let itThisForLastSpec;
-        let beforeEachThisForThisSpec;
-        let afterEachThisForLastSpec;
-        let beforeEachThisForLastSpec;
-        
-        _beforeAll(resetCounter);
-        
-        _beforeEach(function () {
-          beforeEachThisForThisSpec = this;
-        });
-        
-        _afterEach(function () {
-          beforeEachThisForLastSpec = beforeEachThisForThisSpec;
-          afterEachThisForLastSpec = this;
-        });
-
-        obj.it('[stub]', run(function () {
-          counter++;
-          
-          itThisForLastSpec = this;
-        }));
-        
-        _it('should preserve `this` binding from `beforeEach` and `afterEach`', () => {
-          expect(afterEachThisForLastSpec).toBe(beforeEachThisForLastSpec);
-          expect(beforeEachThisForLastSpec).toBe(itThisForLastSpec);
-        });
-
-        _it('should correctly handle completed spec', () => {
-          expect(counter).toBe(1);
-        });
-      });
+    beforeEach(() => {
+      env = new global.jasmine.Env();
+      jasmine = global.jasmineRequire.interface(global.jasmine, env);
     });
-  });
 
-});
+    it('should correctly order execution', (done) => {
+      let log = [];
+      let logId = id => {
+        log.push(`${id}`); 
+      };
+      
+      jasmine.beforeAll(run(() => logId('A')));
+      jasmine.beforeEach(run(() => logId('B')));
+      
+      jasmine.describe('',  () => {
+        jasmine.beforeAll(run(() => logId('C')));
+        jasmine.beforeEach(run(() => logId('D')));
+        
+        jasmine.it('', run(() => logId('E')));
+        jasmine.it('', run(() => logId('F')));
+        jasmine.it('', run(() => logId('G')));
 
-_describe('focused fns', () => {
-  /*
-   * We have to run the tests of focused fns (e.g. fit) in their own jasmine env
-   * so that they don't clobber other tests.
-   */
+        jasmine.afterAll(run(() => logId('H')));
+        jasmine.afterEach(run(() => logId('I')));       
+      });
 
-  _it('should correctly handle completed specs', (done) => {
-    let log = [];
-    let env = new jasmine.Env();
+      jasmine.it('', run(() => logId('J')));
+      jasmine.it('', run(() => logId('K')));
+      jasmine.it('', run(() => logId('L')));
 
-    let obj = jasmineRequire.interface(jasmine, env);
+      env.addReporter({
+        specDone () {
+          log.push('-');
+        },
 
-    env.describe('fit', () => {
-      obj.fit('[stub]', runEventuallyWithPromise(() => {
-        log.push('a');
+        suiteDone () {
+          log.push('|');
+        },
+        
+        jasmineDone () {
+          expect(log).toEqual([
+            'A', 'C',
+            'B', 'D', 'E', 'I', '-',
+            'B', 'D', 'F', 'I', '-',
+            'B', 'D', 'G', 'I', '-',
+            'H', '|',
+            'B', 'J', '-',
+            'B', 'K', '-',
+            'B', 'L', '-'
+          ]);
+          
+          done();
+        }
+      });
+
+      env.execute();
+    });
+
+    it('should correctly order execution for a focused spec', (done) => {
+      let log = [];
+      let logId = id => {
+        log.push(`${id}`); 
+      };
+      
+      jasmine.beforeAll(run(() => logId('A')));
+      jasmine.beforeEach(run(() => logId('B')));
+      
+      jasmine.describe('',  () => {
+        jasmine.beforeAll(run(() => logId('C')));
+        jasmine.beforeEach(run(() => logId('D')));
+        
+        jasmine.fit('', run(() => logId('E')));
+        jasmine.it('', run(() => logId('F')));
+        jasmine.it('', run(() => logId('G')));
+
+        jasmine.afterAll(run(() => logId('H')));
+        jasmine.afterEach(run(() => logId('I')));       
+      });
+
+      jasmine.it('', run(() => logId('J')));
+      jasmine.it('', run(() => logId('K')));
+      jasmine.it('', run(() => logId('L')));
+
+      env.addReporter({
+        specDone () {
+          log.push('-');
+        },
+
+        suiteDone () {
+          log.push('|');
+        },
+        
+        jasmineDone () {
+          expect(log).toEqual([
+            'A', 'C',
+            'B', 'D', 'E', 'I', '-',
+            '-', '-',
+            'H', '|',
+            '-',
+            '-',
+            '-'
+          ]);
+          
+          done();
+        }
+      });
+
+      env.execute();
+    });
+
+    it('should have correct `this` binding', (done) => {
+      jasmine.it(run(function () {
+        expect(this).toBe(env);
       }));
 
-      env.fit('[stub]', () => {
-        log.push('b');
+      env.addReporter({
+        jasmineDone () {
+          done();
+        }
       });
+
+      env.execute();
     });
 
-    env.addReporter({
-      jasmineDone: () => {
-        expect(log).toEqual([
-          'a',
-          'b'
-        ]);
-        done();
-      }
-    });
+    it('should correctly report expectations', (done) => {
+      var log = [];
+      
+      jasmine.it('', run(() => {
+        jasmine.expect(5).toBe(3);
+        jasmine.expect(5).toBe(5);
+      }));
 
-    env.execute();
+      jasmine.it('', run(() => {
+        jasmine.expect('Hello, World').toEqual('Hello, World');
+      }));
+      
+      env.addReporter({
+        specDone (info) {
+          log.push(info);
+        },
+        
+        jasmineDone () {
+          expect(log[0].failedExpectations.length).toBe(1);
+          expect(log[0].passedExpectations.length).toBe(1);
+          expect(log[0].status).toEqual('failed');
+
+          expect(log[1].passedExpectations.length).toBe(1);
+          expect(log[1].failedExpectations.length).toBe(0);
+          expect(log[1].status).toEqual('passed');
+          
+          done();
+        }
+      });
+
+      env.execute();
+    });
   });
 });

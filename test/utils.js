@@ -1,3 +1,11 @@
+import {getUnpatchedFn} from '../src/utils';
+
+export {getUnpatchedFn} from '../src/utils';
+
+function getRandomDelay () {
+  return Math.random() * 100;
+}
+
 export function runEventuallyWithPromise (taskFn) {
   return function () {
     return new Promise(resolve => {
@@ -6,7 +14,7 @@ export function runEventuallyWithPromise (taskFn) {
           taskFn.call(this);
           resolve();
         });
-      }, 100);
+      }, getRandomDelay());
     });
   };
 }
@@ -18,7 +26,7 @@ export function runEventuallyWithDone (taskFn) {
         taskFn.call(this);
         done();
       });
-    }, 100);
+    }, getRandomDelay());
   };
 }
 
@@ -31,7 +39,7 @@ export function runEventuallyWithPromiseAndDone (taskFn) {
           taskFn.call(this);
           done();
         });
-      }, 100);
+      }, getRandomDelay());
     });
   };
 }
@@ -49,7 +57,7 @@ export function failEventuallyWithPromiseError (errorMessage) {
         let e = new Error(errorMessage);
 
         reject(e);
-      }, 100);
+      }, getRandomDelay());
     });
   };
 }
@@ -60,7 +68,7 @@ export function failEventuallyWithDoneError (errorMessage) {
       let e = new Error(errorMessage);
 
       done.fail(e);
-    }, 100);
+    }, getRandomDelay());
   };
 }
 
@@ -77,7 +85,7 @@ export function failEventuallyWithPromiseString (errorMessage) {
     return new Promise((_, reject) => {
       setTimeout(() => {
         reject(errorMessage);
-      }, 100);
+      }, getRandomDelay());
     });
   };
 }
@@ -86,7 +94,7 @@ export function failEventuallyWithDoneString (errorMessage) {
   return (done) => {
     setTimeout(() => {
       done.fail(errorMessage);
-    }, 100);
+    }, getRandomDelay());
   };
 }
 
@@ -96,11 +104,21 @@ export function failSyncWithString (errorMessage) {
   };
 }
 
-export function stubIt (env = jasmine.getEnv()) {
-  env.it('[stub]', () => {});
-}
+export function getUnpatchedEnv (env = jasmine.getEnv()) {
+  let unpatchedEnv = Object.create(env);
+  
+  [
+    'it',
+    'fit',
+    'beforeEach',
+    'beforeAll',
+    'afterEach',
+    'afterAll'
+  ].forEach(s => {
+    let fn = getUnpatchedFn(env, s);
 
-export let interfaces = [
-  {name: 'global/default interface', obj: global},
-  {name: 'custom interface', obj: jasmineRequire.interface(jasmine, jasmine.getEnv())}
-];
+    unpatchedEnv[s] = fn.bind(unpatchedEnv);
+  });
+
+  return unpatchedEnv;
+}
