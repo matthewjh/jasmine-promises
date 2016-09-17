@@ -1,33 +1,8 @@
-function cleanError (error) {
-  function isFrameRelevant (frame) {
-    return frame.indexOf('jasmine-promises') === -1;
-  }
-
-  if (error.stack) {
-    let frames = error.stack.split('\n');
-
-    error.stack = frames.filter(isFrameRelevant).join('\n');
-  }
-
-  return error;
-}
-
-function coerceToError (reason) {
-  var error;
-  
-  if (reason instanceof Error) {
-    error = reason;
-  } else {
-    error = new Error(reason);
-
-    // generate stacktrace if it doesn't already exist
-    try {
-      throw error;
-    } catch (_) {}
-  }
-
-  return error;
-}
+import {
+  cleanError,
+  coerceToError,
+  patchFn
+} from './utils';
 
 function patchDone (done) {
   let doneFailDelegate = done.fail;
@@ -43,13 +18,13 @@ function patchDone (done) {
   }
 }
 
-function patchFunction(obj, slot, fnArgIndex) {
+function patchJasmineFn (obj, slot, fnArgIndex) {
   let delegate = obj[slot];
 
-  obj[slot] = function () {
-    let testFn = arguments[fnArgIndex];
+  patchFn(obj, slot, function (delegate, args) {
+    let testFn = args[fnArgIndex];
 
-    arguments[fnArgIndex] = function (done) {
+    args[fnArgIndex] = function (done) {
       let testFnHasDoneArg = testFn.length >= 1;
       let returnValue;
 
@@ -81,11 +56,12 @@ function patchFunction(obj, slot, fnArgIndex) {
 
       return returnValue;
     };
-    return delegate.apply(this, arguments);
-  };
+    
+    return delegate.apply(this, args);
+  });
 }
 
-function patchInterfaceObj (interfaceObj) {
+function patchEnv (env) {
   let targets = [
     {slot: 'afterEach', fnArgIndex: 0},
     {slot: 'beforeEach', fnArgIndex: 0},
@@ -96,22 +72,26 @@ function patchInterfaceObj (interfaceObj) {
   ];
 
   targets.forEach(target => {
-    patchFunction(interfaceObj, target.slot, target.fnArgIndex);
+    patchJasmineFn(env, target.slot, target.fnArgIndex);
   });
 } 
 
-function patchInterfaceFn (obj) {
-  let delegate = obj.interface;
-  obj.interface = function () {
-    var interfaceObj = delegate.apply(this, arguments);
+function patchEnvCtor (obj, slot) {
+  patchFn(obj, slot, function (delegate, args) {
+    var target = Object.create(delegate.prototype);
+    var obj = delegate.apply(target, arguments);
+    var retVal = obj || target;
 
-    patchInterfaceObj(interfaceObj);
+    patchEnv(retVal);
 
-    return interfaceObj;
-  }
+    return retVal;
+  });
 }
 
 export function apply () {
-  patchInterfaceObj(global);
-  patchInterfaceFn(global.jasmineRequire);
+  patchEnv(global.jasmine.getEnv());
+
+  if (global.jasmine.Env) {
+    patchEnvCtor(global.jasmine, 'Env');
+  }
 }
