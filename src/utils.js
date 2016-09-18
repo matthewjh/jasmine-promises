@@ -36,7 +36,7 @@ export function getUnpatchedFn (obj, slot) {
   let unpatchedFn = obj[k];
 
   if (!unpatchedFn) {
-    throw new Error('object has no unpatched fn for ' + slot);
+    throw new Error(`object has no unpatched fn for '${slot}'`);
   }
 
   return unpatchedFn;

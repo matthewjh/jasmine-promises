@@ -1,5 +1,4 @@
 module.exports = function(config) {
-  console.log(config);
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -8,7 +7,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'browserify', 'source-map-support'],
+    frameworks: ['jasmine-promises', 'jasmine', 'browserify', 'source-map-support'],
 
     plugins: config.plugins.concat([
       require('./src/karma')
@@ -24,11 +23,11 @@ module.exports = function(config) {
     exclude: [
     ],
 
-
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/**/*.js': ['browserify']
+      'test/**/*.js': ['browserify'],
+      'src/**/*.js': ['browserify']
     },
 
     browserify: {

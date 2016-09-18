@@ -30,6 +30,7 @@
     "browserify": "^11.2.0",
     "es6-promise": "^3.0.2",
     "gulp": "^3.9.0",
+    "gulp-copy": "0.0.2",
     "jasmine": "^2.3.2",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.10",
