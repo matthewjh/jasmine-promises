@@ -1,5 +1,4 @@
 import 'es6-promise';
-import {apply} from '../src/patch';
 import {
   runEventuallyWithPromiseAndDone,
   runEventuallyWithPromise,
@@ -19,8 +18,6 @@ let {
   afterAll,
   expect
 } = getUnpatchedEnv();
-
-apply();
 
 [
   runEventuallyWithPromiseAndDone,

@@ -1,4 +1,3 @@
-import {apply} from '../src/patch';
 import {
   getUnpatchedEnv,
   getUnpatchedFn
@@ -15,8 +14,6 @@ let {
   afterAll,
   expect
 } = getUnpatchedEnv();
-
-apply();
 
 describe('jasmine default interface patch', () => {
   let unpatchedIt = getUnpatchedFn(jasmine.getEnv(), 'it');
