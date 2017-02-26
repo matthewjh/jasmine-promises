@@ -36,16 +36,7 @@ function patchJasmineFn (obj, slot, fnArgIndex) {
         } else {
           returnValue = testFn.call(this);
           if (returnValue && returnValue.then) {
-            returnValue.then(() => {
-              done();
-            });
-
-            if (returnValue.catch && done.fail) {
-              returnValue.catch(error => {
-                done.fail(error);
-              });
-            }
-
+            returnValue.then(done, done.fail);
           } else {
             done();
           }
